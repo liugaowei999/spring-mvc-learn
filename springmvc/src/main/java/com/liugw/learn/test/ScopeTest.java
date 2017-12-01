@@ -9,7 +9,7 @@ import com.liugw.learn.intf.HelloApi;
 public class ScopeTest {
 	public static void main(String[] args) throws IOException {
 		System.out.println("========================= Start =========================");
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+		final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
 				"spring-applicationcontext.xml");
 
 		// 注册销毁回调（退出钩子）， 否则我们定义的destroy-method
