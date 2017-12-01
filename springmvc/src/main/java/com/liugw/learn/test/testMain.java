@@ -7,6 +7,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.liugw.learn.intf.HelloApi;
 import com.liugw.learn.pojo.DependentBean;
+import com.liugw.learn.pojo.Printer;
 
 public class testMain {
 
@@ -22,7 +23,7 @@ public class testMain {
 		DependentBean dependentBean = context.getBean("dependentBean", DependentBean.class);
 		dependentBean.write("\nhello world ....\n fdjsalfda\n");
 
-		System.out.println("---------------------------------");
+		System.out.println("-------------------------------------------------------");
 		System.out.println("=======singleton sayHello======");
 		HelloApi helloApi1 = context.getBean("helloApi1", HelloApi.class);
 		helloApi1.sayHello();
@@ -33,6 +34,10 @@ public class testMain {
 		helloApi2.sayHello();
 		helloApi2 = context.getBean("helloApi2", HelloApi.class);
 		helloApi2.sayHello();
+		System.out.println("---------------------------------------------------------");
+
+		Printer printer = context.getBean("printer", Printer.class);
+		printer.print("ÎÒ½«±»Ìæ»»");
 		System.out.println("========================= End ===========================");
 	}
 }

@@ -10,12 +10,12 @@
 	
 	<!-- 配置depends-on 依赖关系 -->
 	<bean id="resourceBean" class="com.liugw.learn.pojo.ResourceBean"  
-	      init-method="init" destroy-method="destroy">
+	      init-method="init" destroy-method="destroy" lazy-init="true">
 	    <property name="file" value="D:/test-spring.txt"/>
 	</bean>
 	
 	<bean id="dependentBean"  class="com.liugw.learn.pojo.DependentBean"  
-	      init-method="init" destroy-method="destroy" depends-on="resourceBean">
+	      init-method="init" destroy-method="destroy" depends-on="resourceBean" lazy-init="true">
 	    <property name="resourceBean" ref="resourceBean"/>
 	</bean>
 
@@ -34,5 +34,30 @@
 		<lookup-method name="createPrototypePrinter" bean="prototypePrinter"/>  
 		<lookup-method name="createSingletonPrinter" bean="singletonPrinter"/>  
 	</bean>
+	
+	<!-- replaced-method 方法替换，替换方法体，实际执行的是 PrinterReplacer中的方法体 -->
+	<bean id="replacer" class="com.liugw.learn.impl.PrinterReplacer"/>  
+	<bean id="printer" class="com.liugw.learn.pojo.Printer">  
+		<replaced-method name="print" replacer="replacer">  
+	        <arg-type>java.lang.String</arg-type>  
+	    </replaced-method>  
+	</bean>
+	
+	<!-- 注册自定义SCOPE -->
+	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">  
+        <property name="scopes">  
+           <map><entry>  
+                   <!-- 指定scope关键字 -->
+                   <key><value>thread</value></key>
+                   
+                   <!-- scope实现 -->
+                   <bean class="com.liugw.learn.myscope.ThreadScope"/>  
+           </entry></map>      
+        </property>  
+    </bean> 
+    
+    <bean id="helloApi10"  class="com.liugw.learn.impl.HelloImpl" scope="thread"/>
+    <bean id="helloApi11"  class="com.liugw.learn.impl.HelloImpl" scope="prototype"/>
+    <bean id="helloApi12"  class="com.liugw.learn.impl.HelloImpl" scope="singleton"/>
        
 </beans>
