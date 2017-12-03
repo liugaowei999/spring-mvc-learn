@@ -1,5 +1,7 @@
 package com.liugw.learn.test;
 
+import java.util.Date;
+
 import org.junit.Test;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
@@ -67,6 +69,65 @@ public class SpELTest {
 		Object vlaue = expression.getValue();
 
 		System.out.println(vlaue.toString());
+
+	}
+
+	@Test
+	public void testClassTypeExression() {
+
+		ExpressionParser parser = new SpelExpressionParser();
+
+		// java.lang包类访问
+		Class<String> result1 = parser.parseExpression("T(String)").getValue(Class.class);
+		System.out.println(result1.getName());
+
+		// 其他包类访问
+		String expression2 = "T(com.liugw.learn.test.SpELTest)";
+		Class<String> result2 = parser.parseExpression(expression2).getValue(Class.class);
+		System.out.println(result2.getName());
+
+		// 类静态字段访问
+		int result3 = parser.parseExpression("T(Integer).MAX_VALUE").getValue(Integer.class);
+		System.out.println(result3);
+
+		// 类静态方法调用
+		int result4 = parser.parseExpression("T(Integer).parseInt('100')").getValue(Integer.class);
+		System.out.println(result4);
+	}
+
+	@Test
+	public void testConstructorExpression() {
+		ExpressionParser parser = new SpelExpressionParser();
+		String result1 = parser.parseExpression("new String('hahahfdaf')").getValue(String.class);
+		System.out.println(result1);
+
+		Date result2 = parser.parseExpression("new java.util.Date()").getValue(Date.class);
+		System.out.println(result2);
+	}
+
+	@Test
+	public void testInstanceOf() {
+		ExpressionParser parser = new SpelExpressionParser();
+		Boolean result = parser.parseExpression("'haha'   instanceof  T(String)").getValue(Boolean.class);
+		System.out.println(result);
+	}
+
+	@Test
+	public void testVariableExpression() {
+		ExpressionParser parser = new SpelExpressionParser();
+		EvaluationContext context = new StandardEvaluationContext();
+		context.setVariable("val1", "hello @@@@@");
+		String result = parser.parseExpression("#val1").getValue(context, String.class);
+		System.out.println(result);
+
+		// #root 根对象
+		context = new StandardEvaluationContext("helloworld_val2");
+		String result2 = parser.parseExpression("#root").getValue(context, String.class);
+		System.out.println(result2);
+
+		// #this 当前上下文对象
+		String result3 = parser.parseExpression("#this").getValue(context, String.class);
+		System.out.println(result3);
 
 	}
 
