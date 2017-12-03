@@ -59,5 +59,18 @@
     <bean id="helloApi10"  class="com.liugw.learn.impl.HelloImpl" scope="thread"/>
     <bean id="helloApi11"  class="com.liugw.learn.impl.HelloImpl" scope="prototype"/>
     <bean id="helloApi12"  class="com.liugw.learn.impl.HelloImpl" scope="singleton"/>
+    
+    
+    <!-- ResourceLoaderAware test ， 又侵入代码方式注入resource-->
+    <bean class="com.liugw.learn.resourcetest.ResourceBean"> </bean>
+    
+    <!-- resource 自定注入， 无侵入 -->
+    <bean id="resourceBean1"  class="com.liugw.learn.resourcetest.ResourceBean3">
+    	<property name="resource" value="classpath:com/liugw/learn/resourcetest/test1.properties"></property>
+    </bean>
+    
+    <bean id="resourceBean2"  class="com.liugw.learn.resourcetest.ResourceBean3">
+    	<property name="resource" value="classpath:com/liugw/learn/resourcetest/test1.properties"></property>
+    </bean>
        
 </beans>
