@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
-       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd"
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
        default-lazy-init="false">
        
     <!-- 延迟初始化 -->
@@ -72,5 +78,69 @@
     <bean id="resourceBean2"  class="com.liugw.learn.resourcetest.ResourceBean3">
     	<property name="resource" value="classpath:com/liugw/learn/resourcetest/test1.properties"></property>
     </bean>
+    
+    
+    <!-- =============================================================================================== -->
+    <!-- 增加注解支持 -->
+    <context:annotation-config/>
+    <bean class="com.liugw.learn.pojo.SpELBeanFactoryPostProcessor"/>
+    <bean id="world" class="java.lang.String">  
+       <constructor-arg value="%{' World!'}"/>  
+   </bean>
+   <bean id="helloBean1" class="com.liugw.learn.pojo.SpELBean"/>
+   <bean id="helloBean2" class="com.liugw.learn.pojo.SpELBean">  
+       <property name="value" value="%{'Hello' + @world + '!!!!' + world }"/>
+   </bean> 
+   
+   <!-- ============================================ AOP ============================================== -->
+   <bean id="helloWorldService" class="com.liugw.learn.impl.HelloWorldService" />
+   <!-- 配置切面 -->
+   <bean id="aspect" class="com.liugw.learn.aop.HelloWorldAspect" />
+   <aop:config>
+   		<aop:pointcut id="pointcut" expression="execution(* com.liugw..*.say*(..))" />
+   		<aop:aspect ref="aspect">
+   			<aop:before pointcut-ref="pointcut" method="beforeAdvice" />
+   			<aop:after pointcut-ref="pointcut" method="afterFinallyAdvice" />
+   			<!-- <aop:after pointcut="execution(* com.liugw..*.say*(..))" method="afterFinallyAdvice" > -->
+   		</aop:aspect>
+   		
+   		<aop:aspect ref="aspect">  
+        	<aop:before pointcut="execution(* com.liugw..*.sayBefore(..)) and args(param)"   
+                        method="beforeAdvice(java.lang.String)"   
+                        arg-names="param"/> 
+            <aop:after-returning pointcut="execution(* com.liugw..*.sayAfterReturning(..))"  
+                                 method="afterReturningAdvice"  
+                                 arg-names="retVal"    
+                                 returning="retVal"/>
+    	</aop:aspect>
+    	
+    	<aop:aspect ref="aspect">  
+            <aop:after-throwing pointcut="execution(* com.liugw..*.sayAfterThrowing(..))"  
+                                method="afterThrowingAdvice"  
+                                arg-names="exception"  
+                                throwing="exception"/>
+    	</aop:aspect>
+    	
+    	<!-- 后置最终通知 -->
+    	<aop:aspect ref="aspect">
+    		<aop:after pointcut="execution(* com.liugw..*.sayAfterFinally(..))"  
+         			   method="afterFinallyAdvice"/>
+    	</aop:aspect>
+    	
+    	<!-- 环绕通知 -->
+    	<aop:aspect ref="aspect">
+    		<aop:around pointcut="execution(* com.liugw..*.sayAround(..))"  
+           				method="aroundAdvice"/>
+    	</aop:aspect>
+    	
+    	<!-- 引入新的接口 -->
+    	<aop:aspect ref="aspect">
+    		<!-- "com.liugw..*.IHelloWorldService+"  ====》 匹配IHelloWorldService接口的子类型，如HelloWorldService实现 -->
+    		<aop:declare-parents  
+    							types-matching="com.liugw..*.IHelloWorldService+"  
+    							implement-interface="com.liugw.learn.intf.IIntroductionService"                           
+    							default-impl="com.liugw.learn.impl.IntroductiondService"/>
+    	</aop:aspect>
+   </aop:config>
        
 </beans>
