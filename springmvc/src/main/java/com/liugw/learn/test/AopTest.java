@@ -31,6 +31,13 @@ public class AopTest {
 		introduction.induct();
 	}
 
+	@Test
+	public void testSchemaAdvisor() {
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring-applicationcontext.xml");
+		IHelloWorldService helloWorldService = context.getBean("helloWorldService", IHelloWorldService.class);
+		helloWorldService.sayAdvisorBefore("[advisor before]");
+	}
+
 	public static void main(String[] args) {
 		ApplicationContext context = new ClassPathXmlApplicationContext("spring-applicationcontext.xml");
 		IHelloWorldService helloWorldService = context.getBean("helloWorldService", IHelloWorldService.class);

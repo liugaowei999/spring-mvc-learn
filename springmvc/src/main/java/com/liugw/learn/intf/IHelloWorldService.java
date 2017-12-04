@@ -13,4 +13,6 @@ public interface IHelloWorldService {
 	public boolean sayAfterFinally();
 
 	public void sayAround(String param);
+
+	public void sayAdvisorBefore(String param);
 }

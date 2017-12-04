@@ -97,7 +97,7 @@
    <!-- 配置切面 -->
    <bean id="aspect" class="com.liugw.learn.aop.HelloWorldAspect" />
    <aop:config>
-   		<aop:pointcut id="pointcut" expression="execution(* com.liugw..*.say*(..))" />
+   		<aop:pointcut id="pointcut" expression="execution(* com.liugw..*.sayH*(..))" />
    		<aop:aspect ref="aspect">
    			<aop:before pointcut-ref="pointcut" method="beforeAdvice" />
    			<aop:after pointcut-ref="pointcut" method="afterFinallyAdvice" />
@@ -142,5 +142,13 @@
     							default-impl="com.liugw.learn.impl.IntroductiondService"/>
     	</aop:aspect>
    </aop:config>
+   
+   <!-- aop advice -->
+   <bean id="beforeAdvice"  class="com.liugw.learn.aop.BeforeAdviceImpl" />
+   <aop:config>
+   		<aop:advisor pointcut="execution(* com.liugw..*.sayAdvisorBefore(..))" 
+   								  advice-ref="beforeAdvice"/>
+   </aop:config>
+   
        
 </beans>
