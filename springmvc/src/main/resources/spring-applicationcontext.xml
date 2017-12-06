@@ -98,16 +98,18 @@
    <bean id="aspect" class="com.liugw.learn.aop.HelloWorldAspect" />
    <aop:config>
    		<aop:pointcut id="pointcut" expression="execution(* com.liugw..*.sayH*(..))" />
-   		<aop:aspect ref="aspect">
+   		<aop:aspect ref="aspect" order="1">
    			<aop:before pointcut-ref="pointcut" method="beforeAdvice" />
    			<aop:after pointcut-ref="pointcut" method="afterFinallyAdvice" />
    			<!-- <aop:after pointcut="execution(* com.liugw..*.say*(..))" method="afterFinallyAdvice" > -->
    		</aop:aspect>
    		
-   		<aop:aspect ref="aspect">  
+   		<aop:aspect ref="aspect" order="2">
         	<aop:before pointcut="execution(* com.liugw..*.sayBefore(..)) and args(param)"   
                         method="beforeAdvice(java.lang.String)"   
-                        arg-names="param"/> 
+                        arg-names="param"/>
+
+            <!-- 后置返回通知 -->
             <aop:after-returning pointcut="execution(* com.liugw..*.sayAfterReturning(..))"  
                                  method="afterReturningAdvice"  
                                  arg-names="retVal"    
