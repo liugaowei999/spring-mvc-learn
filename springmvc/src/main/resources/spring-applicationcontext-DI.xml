@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+       default-lazy-init="false">
+       
+       
+       <context:annotation-config></context:annotation-config>
+       
+       <context:component-scan base-package="com.liugw.learn.di"></context:component-scan>
+  <!--  <bean id="woman" class="com.liugw.learn.di.Women"></bean> -->
+<!--    <bean id="man" class="com.liugw.learn.di.Man"></bean> -->
+   
+   <!-- <bean id="nurse1" class="com.liugw.learn.di.HuShi">
+   		<property name="human" ref="man"></property>
+   </bean>
+
+	<bean id="nurse" class="com.liugw.learn.di.HuShi">
+		<constructor-arg ref = "man"></constructor-arg>
+	</bean> -->
+	
+<!-- 	<bean id="nurse" class="com.liugw.learn.di.HuShi"/> -->
+	
+	
+    
+    
+  
+       
+</beans>
