@@ -13,12 +13,12 @@ public class AopTest {
 	public void testHelloWorld() {
 		ApplicationContext context = new ClassPathXmlApplicationContext("spring-applicationcontext.xml");
 		IHelloWorldService helloWorldService = context.getBean("helloWorldService", IHelloWorldService.class);
-		// helloWorldService.sayHello();
+		helloWorldService.sayHello();
 		// helloWorldService.sayBefore("*** sayBefore param vlaue ***");
 		// helloWorldService.sayAfterReturning();
 		// helloWorldService.sayAfterThrowing();
 		// helloWorldService.sayAfterFinally();
-		helloWorldService.sayAround("[AROUND]");
+		//		helloWorldService.sayAround("[AROUND]");
 	}
 
 	@Test
