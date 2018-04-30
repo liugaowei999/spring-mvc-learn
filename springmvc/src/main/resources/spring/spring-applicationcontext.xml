@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+       default-lazy-init="false">
+       
+       <!-- <bean id="springUtils" class="com.liugw.timetask.SpringUtils"></bean>  -->
+       
+       <context:component-scan base-package="com.liugw.spmvc;com.liugw.timetask">
+       		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+       </context:component-scan>
+       
+    <!-- 延迟初始化 -->
+	<bean id="helloApi"  class="com.liugw.learn.impl.HelloImpl"  lazy-init="true"/>
+	
+	<!-- 配置depends-on 依赖关系 -->
+	<bean id="resourceBean" class="com.liugw.learn.pojo.ResourceBean"  
+	      init-method="init" destroy-method="destroy" lazy-init="true">
+	    <property name="file" value="D:/test-spring.txt"/>
+	</bean>
+	
+	<bean id="dependentBean"  class="com.liugw.learn.pojo.DependentBean"  
+	      init-method="init" destroy-method="destroy" depends-on="resourceBean" lazy-init="true">
+	    <property name="resourceBean" ref="resourceBean"/>
+	</bean>
+
+
+	<!-- 查找方法注入 ,屏蔽方法，阻止方法的执行，直接提供返回值 -->
+	<bean id="prototypePrinter"  class="com.liugw.learn.pojo.Printer" scope="prototype"/>
+	<bean id="singletonPrinter"  class="com.liugw.learn.pojo.Printer" scope="singleton"/>
+	
+	<bean id="helloApi1" class="com.liugw.learn.impl.HelloImpl5" scope="singleton">  
+		<property name="printer" ref="prototypePrinter"/>
+		<lookup-method name="createPrototypePrinter" bean="prototypePrinter"/>  
+		<lookup-method name="createSingletonPrinter" bean="singletonPrinter"/>  
+	</bean>            
+	<bean id="helloApi2" class="com.liugw.learn.impl.HelloImpl5" scope="prototype">  
+		<property name="printer" ref="prototypePrinter"/>
+		<lookup-method name="createPrototypePrinter" bean="prototypePrinter"/>  
+		<lookup-method name="createSingletonPrinter" bean="singletonPrinter"/>  
+	</bean>
+	
+	<!-- replaced-method 方法替换，替换方法体，实际执行的是 PrinterReplacer中的方法体 -->
+	<bean id="replacer" class="com.liugw.learn.impl.PrinterReplacer"/>  
+	<bean id="printer" class="com.liugw.learn.pojo.Printer">  
+		<replaced-method name="print" replacer="replacer">  
+	        <arg-type>java.lang.String</arg-type>  
+	    </replaced-method>  
+	</bean>
+	
+	<!-- 注册自定义SCOPE -->
+	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">  
+        <property name="scopes">  
+           <map><entry>  
+                   <!-- 指定scope关键字 -->
+                   <key><value>thread</value></key>
+                   
+                   <!-- scope实现 -->
+                   <bean class="com.liugw.learn.myscope.ThreadScope"/>  
+           </entry></map>      
+        </property>  
+    </bean> 
+    
+    <bean id="helloApi10"  class="com.liugw.learn.impl.HelloImpl" scope="thread"/>
+    <bean id="helloApi11"  class="com.liugw.learn.impl.HelloImpl" scope="prototype"/>
+    <bean id="helloApi12"  class="com.liugw.learn.impl.HelloImpl" scope="singleton"/>
+    
+    
+    <!-- ResourceLoaderAware test ， 又侵入代码方式注入resource-->
+    <bean class="com.liugw.learn.resourcetest.ResourceBean"> </bean>
+    
+    <!-- resource 自定注入， 无侵入 -->
+    <bean id="resourceBean1"  class="com.liugw.learn.resourcetest.ResourceBean3">
+    	<property name="resource" value="classpath:com/liugw/learn/resourcetest/test1.properties"></property>
+    </bean>
+    
+    <bean id="resourceBean2"  class="com.liugw.learn.resourcetest.ResourceBean3">
+    	<property name="resource" value="classpath:com/liugw/learn/resourcetest/test1.properties"></property>
+    </bean>
+    
+    
+    <!-- =============================================================================================== -->
+    <!-- 增加注解支持 -->
+    <context:annotation-config/>
+    <bean class="com.liugw.learn.pojo.SpELBeanFactoryPostProcessor"/>
+    <bean id="world" class="java.lang.String">  
+       <constructor-arg value="%{' World!'}"/>  
+   </bean>
+   <bean id="helloBean1" class="com.liugw.learn.pojo.SpELBean"/>
+   <bean id="helloBean2" class="com.liugw.learn.pojo.SpELBean">  
+       <property name="value" value="%{'Hello' + @world + '!!!!' + world }"/>
+   </bean> 
+   
+   <!-- ============================================ AOP ============================================== -->
+   <bean id="helloWorldService" class="com.liugw.learn.impl.HelloWorldService" />
+   <!-- 配置切面 -->
+   <bean id="aspect" class="com.liugw.learn.aop.HelloWorldAspect" />
+   <aop:config>
+   		<aop:pointcut id="pointcut" expression="execution(* com.liugw..*.sayH*(..))" />
+   		<aop:aspect ref="aspect" order="1">
+   			<aop:before pointcut-ref="pointcut" method="beforeAdvice" />
+   			<aop:after pointcut-ref="pointcut" method="afterFinallyAdvice" />
+   			<!-- <aop:after pointcut="execution(* com.liugw..*.say*(..))" method="afterFinallyAdvice" > -->
+   		</aop:aspect>
+   		
+   		<aop:aspect ref="aspect" order="2">
+        	<aop:before pointcut="execution(* com.liugw..*.sayBefore(..)) and args(param)"   
+                        method="beforeAdvice(java.lang.String)"   
+                        arg-names="param"/>
+
+            <!-- 后置返回通知 -->
+            <aop:after-returning pointcut="execution(* com.liugw..*.sayAfterReturning(..))"  
+                                 method="afterReturningAdvice"  
+                                 arg-names="retVal"    
+                                 returning="retVal"/>
+    	</aop:aspect>
+    	
+    	<aop:aspect ref="aspect">  
+            <aop:after-throwing pointcut="execution(* com.liugw..*.sayAfterThrowing(..))"  
+                                method="afterThrowingAdvice"  
+                                arg-names="exception"  
+                                throwing="exception"/>
+    	</aop:aspect>
+    	
+    	<!-- 后置最终通知 -->
+    	<aop:aspect ref="aspect">
+    		<aop:after pointcut="execution(* com.liugw..*.sayAfterFinally(..))"  
+         			   method="afterFinallyAdvice"/>
+    	</aop:aspect>
+    	
+    	<!-- 环绕通知 -->
+    	<aop:aspect ref="aspect">
+    		<aop:around pointcut="execution(* com.liugw..*.sayAround(..))"  
+           				method="aroundAdvice"/>
+    	</aop:aspect>
+    	
+    	<!-- 引入新的接口 -->
+    	<aop:aspect ref="aspect">
+    		<!-- "com.liugw..*.IHelloWorldService+"  ====》 匹配IHelloWorldService接口的子类型，如HelloWorldService实现 -->
+    		<aop:declare-parents  
+    							types-matching="com.liugw..*.IHelloWorldService+"  
+    							implement-interface="com.liugw.learn.intf.IIntroductionService"                           
+    							default-impl="com.liugw.learn.impl.IntroductiondService"/>
+    	</aop:aspect>
+   </aop:config>
+   
+   <!-- aop advice -->
+   <bean id="beforeAdvice"  class="com.liugw.learn.aop.BeforeAdviceImpl" />
+   <aop:config>
+   		<aop:advisor pointcut="execution(* com.liugw..*.sayAdvisorBefore(..))" 
+   								  advice-ref="beforeAdvice"/>
+   </aop:config>
+   
+       
+</beans>
